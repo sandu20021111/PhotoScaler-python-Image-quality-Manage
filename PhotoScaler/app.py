@@ -47,10 +47,9 @@ uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 if uploaded_file:
     # Open image
     img = Image.open(uploaded_file)
-    st.image(img, caption="🖼️ Original Image", use_column_width=True)
 
     st.subheader("⚙️ Adjust Quality Settings")
-
+    
     # Slider for JPEG quality
     quality = st.slider("Select JPEG Quality", 1, 100, 80)
 
@@ -66,12 +65,20 @@ if uploaded_file:
     if resized_img.mode in ("RGBA", "P"):
         resized_img = resized_img.convert("RGB")
 
-    if st.button("✨ Process Image"):
+    # Display original and processed images side by side
+    st.subheader("🖼️ Image Comparison")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image(img, caption="Original Image", use_column_width=True)
+    with col2:
+        st.image(resized_img, caption="Processed Image", use_column_width=True)
+
+    # Save / Download processed image
+    if st.button("✨ Process & Download Image"):
         buf = io.BytesIO()
         resized_img.save(buf, format="JPEG", quality=quality)
         byte_im = buf.getvalue()
 
-        # Download button
         st.download_button(
             label="📥 Download Processed Image",
             data=byte_im,
